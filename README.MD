@@ -16,10 +16,10 @@ Um sistema bancário simples feito em **Python** com **SQLite** para gerenciamen
 - SQLite
 
 ##  Estrutura do projeto
-├── main.py # arquivo principal como diz o nome, onde e gerenciado o menu interativo e funcoes mais visuals.
-├── modulos.py # Funções do sistema bancário, o cerebro do projeto roda todo aqui, onde ficam as funcoes.
-├── BancoDeDados.db # Banco SQLite 
-└── README.md # Documentaçao do projeto
+-main.py # arquivo principal como diz o nome, onde e gerenciado o menu interativo e funcoes mais visuals.
+-modulos.py # Funções do sistema bancário, o cerebro do projeto roda todo aqui, onde ficam as funcoes.
+-BancoDeDados.db # Banco SQLite 
+-README.md # Documentaçao do projeto
 
 ## Atualizacoes em um futuro muito proximo, conforme vou atualizando vou marcando um X
 - [ ]**Visualizacao completa das logs** quando logado como ADMIN, vai ter a opcao de ver a LOG de todas as tranferencias, aberturas de conta e etc
