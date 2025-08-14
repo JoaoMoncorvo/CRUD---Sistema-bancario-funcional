@@ -44,5 +44,3 @@ Um sistema bancário simples feito em **Python** com **SQLite** para gerenciamen
 - [  ]**Sistema de autenticacao** vou implementar hashs nas senhas
 - [  ]**Manipulacao total dos dados** quando logado como ADMIN, ele vai conseguir manipular oque ele quiser dos bancos de dados
 - [  ]**Interface Grafica** pretendo fazer uma interface grafica simples, porem necessito de mais estudo nessa parte.
->>>>>>> c76db2892f678176d6135fe2ab3508baf68a0ec8
-
