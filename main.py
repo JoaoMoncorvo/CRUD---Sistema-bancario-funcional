@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) #ISSO AQUI TIRA UM AVISO CHATO QUE ESTA DANDO POR CONTA DO PYTHON ANTIGO, EM PROXIMOS COMMITS MUDO ISSO.
 import sqlite3
-from modulos import(Menu, MenuLogado, Registrar, Login, TranferirDinheiro, SacarDinheiro, DepositarDinheiro)
+from modulos import(Menu, MenuLogado, Registrar, Login, TranferirDinheiro, SacarDinheiro, DepositarDinheiro, VisualizarUsuarios, ExcluirCliente, ExcluirConta, MenuAdmin)
 from time import sleep
 
 conexao = sqlite3.connect("BancoDeDados.db")
@@ -36,7 +36,7 @@ while funcionando:
                                     print('Volte sempre')
                                     break
                                 else:
-                                    print('DIGITE UMA OPCAO VALIDA "S" OU "N"')
+                                    print('DIGITE UMA OPCAO VALIDA "S" OU "N"')#
                                     continue
                     case 2:
                         SacarDinheiro(login)
@@ -49,18 +49,39 @@ while funcionando:
                         print('Obrigado por usar nosso Banco...')
                         print('Volte sempre')
                         break
+                    case 6:
+                        ExcluirConta(login)
+                        break
         case 2:
             registrar = Registrar()
             print('VOLTANDO AO MENU')
         case 3:
-            print('FUNCAO EM CONSTRUCAO')
-            print('por favor tente as outras')
-            print('voltando ao menu inicial......')
-            sleep(2)
-            continue
+            while True:
+                menuAdmin = MenuAdmin()
+                match menuAdmin:
+                    case 1:
+                        VisualizarUsuarios()
+                        opcao = input('QUER CONTINUAR NO MEU DE ADM OU VOLTAR AO MENU PRINCIPAL? [1/2]')
+                        if opcao == 1:
+                            continue
+                        elif opcao == 2:
+                            break
+                    case 2:
+                        Excluir()
+                        opcao = input('QUER CONTINUAR NO MEU DE ADM OU VOLTAR AO MENU PRINCIPAL? [1/2]')
+                        if opcao == 1:
+                            continue
+                        elif opcao == 2:
+                            break
+                    case 3:
+                        print('EM CONSTRUCAO')
+                    case 4:
+                        print('EM CONSTRUCAO')
+                    case 5:
+                        break
+                    case _:
+                        continue
         case 4:
             print('Obrigado por usar nosso Banco...')
             print('Volte sempre')
             funcionando = False
-
-
