@@ -29,20 +29,12 @@ Um sistema bancário simples feito em **Python** com **SQLite** para gerenciamen
 - **README.md** # Documentaçao do projeto
 
 ## Atualizacoes em um futuro muito proximo, conforme vou atualizando vou marcando um X
-<<<<<<< HEAD
 - [X]**Menu de ADMIN** Menu interativo pelo TERMINAL 
 - [X]**Visualizacao completa dos usuarios** O admin pode visualizar os dados de todos os clientes
 - [X]**Exclusao de Conta pelo Admin ou pelo Usuario** O usuario pode excluir a propia conta tanto que tenha 0 reais nela, tendo a possibilidade de transferir pra poder excluir a conta. Admin pode excluir qualquer conta
-- [ ]**Visualizacao completa das logs** quando logado como ADMIN, vai ter a opcao de ver a LOG de todas as tranferencias, aberturas de conta e etc
+- [X]**Visualizacao completa das logs** quando logado como ADMIN, vai ter a opcao de ver a LOG de todas as tranferencias
 - [ ]**Historico de transacao** Usuario vai conseguir ver seu extrato
 - [ ]**Sistema de autenticacao** vou implementar hashs nas senhas
 - [ ]**Manipulacao total dos dados** quando logado como ADMIN, ele vai conseguir manipular oque ele quiser dos bancos de dados
 - [ ]**Interface Grafica** pretendo fazer uma interface grafica simples, porem necessito de mais estudo nessa parte.
-=======
-- [  ]**Visualizacao completa das logs** quando logado como ADMIN, vai ter a opcao de ver a LOG de todas as tranferencias, aberturas de conta e etc
-- [  ]**Historico de transacao** Usuario vai conseguir ver seu extrato
-- [  ]**Sistema de autenticacao** vou implementar hashs nas senhas
-- [  ]**Manipulacao total dos dados** quando logado como ADMIN, ele vai conseguir manipular oque ele quiser dos bancos de dados
-- [  ]**Interface Grafica** pretendo fazer uma interface grafica simples, porem necessito de mais estudo nessa parte.
->>>>>>> c76db2892f678176d6135fe2ab3508baf68a0ec8
 

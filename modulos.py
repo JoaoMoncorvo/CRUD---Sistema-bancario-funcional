@@ -1,20 +1,8 @@
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning) #ISSO AQUI TIRA UM AVISO CHATO QUE ESTA DANDO POR CONTA DO PYTHON ANTIGO, EM PROXIMOS COMMITS MUDO ISSO.
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 import sqlite3
 import datetime
 from time import sleep
-
-conexao = sqlite3.connect("BancoDeDados.db")  
-cursor = conexao.cursor()
-data = datetime.date.today()  #PARA SALVAR A DATA DA CRIACAO DA CONTA, FUTURAMENTE VOU USAR UM MAIS PRECISO, COM SEGUNDOS PARA SALVAR TRANSACOES
-#CRIA UMA TABELA NOVA CASO ELA NAO EXISTA
-cursor.execute("""         
-CREATE TABLE IF NOT EXISTS Clientes
-    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL,
-    saldo REAL NOT NULL,
-    DataCriacao DATE NOT NULL,
-    senha TEXT NOT NULL)""")
 
 def Menu():
     print('Menu do Banco Moncorvo')
@@ -30,7 +18,8 @@ def Menu():
             break
         else:
             print('DIGITE APENAS UMA DAS OPCOES ACIMA: 1, 2 OU 3.')
-def Registrar():
+
+def Registrar(cursor, conexao, data):
     print('Vamos, comecar o seu processo de registro no Banco Moncorvo, primeiramente')
     nome = str(input('Digite o seu primeiro e ultimo nome: '))
     while True:
@@ -54,7 +43,8 @@ def Registrar():
     for cliente in clientes:
         if cliente[1] == nome and cliente[4] == senha and cliente[2] == 0:
             print(f'Bem vindo {nome}, ao Banco Moncorvo. Seu ID e {cliente[0]}')
-def Login():
+
+def Login(cursor):
     print('=-'*12)
     print("  TELA DE LOGIN")
     print('-='*12)
@@ -80,8 +70,9 @@ def Login():
                     break
                 else:
                     print('senha incorreta, tente novamente.')
-def TranferirDinheiro(login):
-    cursor.execute(f'SELECT * FROM Clientes WHERE id = {login}') #vai pegar todas as linhas que o ID e igual ao informado, ou seja, so uma.
+
+def TranferirDinheiro(login, cursor, conexao, cursor_logs, conexao_logs, data):
+    cursor.execute(f'SELECT * FROM Clientes WHERE id = {login}')
     cliente = cursor.fetchall()
     print('-='*15)
     print(f'SALDO:R$ {cliente[0][2]}')
@@ -108,18 +99,27 @@ def TranferirDinheiro(login):
                 UPDATE Clientes
                 SET saldo = saldo - ?
                 WHERE id = ?""",
-                (valor, login)) #atualizando saldo, diminuindo de um e aumentando de outro, uma tranferencia.
+                (valor, login))
                 cursor.execute("""
                 UPDATE Clientes
                 SET saldo = saldo + ?
                 WHERE id = ?""",
                 (valor, identificador))
                 conexao.commit()
+                
+                # AGORA USA O CURSOR_LOGS PARA INSERIR NO BANCO DE LOGS
+                cursor_logs.execute("""
+                 INSERT INTO LogTransacoes (tipo, pagador, recebedor, quantia, data)
+                 VALUES(?, ?, ?, ?, ?)
+                 """, ('transferencia', cliente[0][0], identificador, valor, data))
+                conexao_logs.commit()
+                
                 print(f'R${valor} tranferido para {recebedor[0][1]}, agora voce tem R${cliente[0][2] - valor} restantes na conta')
                 break
             if opcao == 'N':
                 continue
-def SacarDinheiro(login):
+
+def SacarDinheiro(login, cursor, conexao):
     cursor.execute(f'SELECT * FROM Clientes WHERE id = {login}')
     cliente = cursor.fetchall()
     print('-='*15)
@@ -142,7 +142,8 @@ def SacarDinheiro(login):
             (valor, login))
             conexao.commit()
             break
-def DepositarDinheiro(login):
+
+def DepositarDinheiro(login, cursor, conexao):
     cursor.execute(f'SELECT * FROM Clientes WHERE id = {login}')
     cliente = cursor.fetchall()
     print('-='*15)
@@ -158,6 +159,7 @@ def DepositarDinheiro(login):
     WHERE id = ?""",
     (valor, login))
     conexao.commit()
+
 def MenuLogado():
     while True:
         print('-='*15)
@@ -170,18 +172,20 @@ def MenuLogado():
         print('6 - EXCLUIR CONTA')
         print('=-'*15)
         opcao = int(input('escreva a razao correspondente ao indice: '))
-        if opcao < 1 and opcao > 6:
+        if opcao < 1 or opcao > 6:
             print('Digite um numero valido! 1, 2, 3, 4, 5 ou 6')
             continue
         else:
             return opcao
             break
-def VisualizarUsuarios():
+
+def VisualizarUsuarios(cursor):
     cursor.execute('SELECT * FROM Clientes')
     listagem = cursor.fetchall()
     for cliente in listagem:
-        print(f'ID - {cliente[0]} | Nome - {cliente[1]} | Data de criacao - {cliente[3]} | Senha - {cliente[2]}')
-def ExcluirCliente():
+        print(f'ID - {cliente[0]} | Nome - {cliente[1]} | Data de criacao - {cliente[3]} | Saldo - R${cliente[2]}')
+
+def ExcluirCliente(cursor, conexao):
     funcionando = True
     while funcionando:
         opcao = str(input('Voce sabe o ID do Cliente que voce quer excluir do sistema[S/N]? se nao souber, sabe o nome[M]? ')).upper()
@@ -190,11 +194,10 @@ def ExcluirCliente():
                 idCliente = int(input('Digite o ID do cliente que voce quer excluir: '))
                 cursor.execute(f'SELECT * FROM Clientes WHERE id = {idCliente}')
                 clienteEscolhido = cursor.fetchall()
-                print(clienteEscolhido)
                 if clienteEscolhido == []:
                     print('ID nao encontrado, por favor digite um id valido, vou listar pra voce todos os clientes... ')
                     sleep(2)
-                    VisualizarUsuarios()
+                    VisualizarUsuarios(cursor)
                 else:
                     opcaoFinal = str(input(f'TEM CERTEZA QUE DESEJA EXCLUIR O CLIENTE "{clienteEscolhido[0][1]}" COM ID: {idCliente} ?? [S/N] ')).upper()
                     if opcaoFinal == 'S':
@@ -208,22 +211,21 @@ def ExcluirCliente():
                         if opcaoFinal2 == 2:
                             funcionando = False
                         break
-                    elif opcao == 'N':
+                    else:
                         funcionando = False
                         break
         elif opcao == 'N':
             print('Ok, irei listar os clientes pra voce e perguntar denovo o ID')
-            VisualizarUsuarios()
+            VisualizarUsuarios(cursor)
             continue
         elif opcao == 'M':
             clientesLista = []
-            numero = 0
             nomeCliente = str(input('Me diga exatamente o nome completo do cliente que voce quer Excluir: '))
             cursor.execute(f'SELECT * FROM Clientes')
             clientes = cursor.fetchall()
             for cliente in clientes:
                 if cliente[1] == nomeCliente:
-                    print(f'{numero + 1} - {cliente}')
+                    print(f'{len(clientesLista) + 1} - {cliente}')
                     clientesLista.append(cliente)
             if clientesLista == []:
                 print('Nenhum cliente encontrado com esse nome')
@@ -238,13 +240,13 @@ def ExcluirCliente():
                     funcionando = False
                 elif opcao == 1:
                     continue
-
         else:
             print('DIGITE UMA OPCAO VALIDA, "S" se souber o ID, "N" se nao souber, vou listar pra voce todos os clientes e "M" se voce sabe apenas o nome, vou listar todos os clientes com esse nome.')
-def ExcluirConta(login):
+
+def ExcluirConta(login, cursor, conexao):
     cursor.execute(f'SELECT * FROM Clientes WHERE id = {login}')
     cliente = cursor.fetchall()
-    if cliente[0][2] <= 0:
+    if cliente[0][2] > 0:
         print('IMPOSSIVEL EXCLUIR UMA CONTA COM SALDO MAIOR QUE 0 (ZERO), TRANSFIRA OU SAQUE ESSE DINHEIRO ANTES.')
     else:
         while True:
@@ -263,13 +265,14 @@ def ExcluirConta(login):
                 break
             else:
                 print('DIGITE UMA OPCAO VALIDA!')
+
 def MenuAdmin():
     print('-='*15)
     print('NOVO MENU ADMIN')
     print('1 - Visualizar usuarios')
     print('2 - Excluir Usuario')
-    print('3 - Mudar infomacao de alguem (EM BREVE)')
-    print('4 - Ver logs de transacoes e criacoes de conta (EM BREVE)')
+    print('3 - Ver logs de transacoes')
+    print('4 - Mudar infomacao de alguem (EM BREVE)')
     print('5 - Voltar ao Menu')
     print('=-'*15)
     while True:
@@ -280,3 +283,14 @@ def MenuAdmin():
         else:
             print('digite uma opcao valida')
             continue
+
+def VisualizarTransacoesAdmin(cursor_logs):
+    cursor_logs.execute("SELECT * FROM LogTransacoes")
+
+    logs = cursor_logs.fetchall()
+
+    for log in logs:
+        print(f'DATA: {log[4]}, TIPO: {log[0]}, QUANTIA: {log[3]}, RECEBEDOR: {log[2]}, PAGADOR: {log[1]}')
+
+
+
