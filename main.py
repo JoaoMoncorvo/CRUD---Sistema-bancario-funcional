@@ -1,7 +1,8 @@
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 import sqlite3
-from modulos import(Menu, MenuLogado, Registrar, Login, TranferirDinheiro, SacarDinheiro, DepositarDinheiro, VisualizarUsuarios, ExcluirCliente, ExcluirConta, MenuAdmin, VisualizarTransacoesAdmin)
+from modulos import(Menu, MenuLogado, Registrar, Login, TranferirDinheiro, SacarDinheiro, DepositarDinheiro, VisualizarUsuarios, ExcluirCliente, ExcluirConta, 
+MenuAdmin, VisualizarTransacoesAdmin, ExtratoBancario)
 from time import sleep
 import datetime
 
@@ -68,13 +69,23 @@ while funcionando:
                     case 3:
                         DepositarDinheiro(login, cursor, conexao)
                     case 4:
-                        break
+                        ExtratoBancario(login, cursor, conexao, cursor_logs, conexao_logs)
+                        print('VOLTANDO AO MENU...')
+                        sleep(0.3)
+                        print('1')
+                        sleep(.3)
+                        print('2')
+                        sleep(0.3)
+                        print('3')
+                        sleep(0.3)
                     case 5:
+                        break
+                    case 6:
                         funcionando = False
                         print('Obrigado por usar nosso Banco...')
                         print('Volte sempre')
                         break
-                    case 6:
+                    case 7:
                         ExcluirConta(login, cursor, conexao)
                         break
         case 2:
@@ -115,3 +126,4 @@ while funcionando:
             print('Obrigado por usar nosso Banco...')
             print('Volte sempre')
             funcionando = False
+

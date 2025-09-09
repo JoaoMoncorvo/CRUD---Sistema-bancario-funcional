@@ -167,9 +167,10 @@ def MenuLogado():
         print('1 - Tranferir dinheiro')
         print('2 - Sacar dinheiro')
         print('3 - Depositar dinheiro')
-        print('4 - Volta ao Menu principal')
-        print('5 - SAIR')
-        print('6 - EXCLUIR CONTA')
+        print('4 - Ver extrato bancario')
+        print('5 - Volta ao Menu principal')
+        print('6 - SAIR')
+        print('7 - EXCLUIR CONTA')
         print('=-'*15)
         opcao = int(input('escreva a razao correspondente ao indice: '))
         if opcao < 1 or opcao > 6:
@@ -291,6 +292,14 @@ def VisualizarTransacoesAdmin(cursor_logs):
 
     for log in logs:
         print(f'DATA: {log[4]}, TIPO: {log[0]}, QUANTIA: {log[3]}, RECEBEDOR: {log[2]}, PAGADOR: {log[1]}')
+
+
+def ExtratoBancario(login, cursor, conexao, cursor_logs, conexao_logs):
+    print('ACESSANDO SEU EXTRATO BANCARIO')
+    cursor_logs.execute(f'SELECT * FROM LogTransacoes WHERE recebedor = {login} OR pagador = {login}')
+    extrato = cursor_logs.fetchall()
+    for atividade in extrato:
+        print(f'TIPO: {atividade[0]}, PAGADOR: {atividade[1]}, RECEBEDOR: {atividade[2]}, QUANTIA: {atividade[3]}, DATA: {atividade[4]}')
 
 
 
